@@ -1,0 +1,38 @@
+﻿@page "/"
+
+@inject IJSRuntime js
+
+<h2>Space:</h2>
+<div id="myDiagramDiv" style="height: 600px; width: 600px; border: 1px solid black; float: left;"></div>
+
+
+<button class="btn btn-success" @onclick="ExpandSelected">Expand selected</button>
+<h5>Selected Node: @SelectedNode</h5>
+@code
+{
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        index = this; 
+        if (firstRender)
+            await js.InvokeAsync<string>("initGoJS");
+    }
+
+    static Index index = null;
+
+    private async Task ExpandSelected()
+    {
+        await js.InvokeVoidAsync("expandSelected");
+    }
+
+    static string SelectedNode = string.Empty;
+
+    [JSInvokable("selectNode")]
+    public static void SelectNode(string selectedNode)
+    {
+        SelectedNode = selectedNode;
+        index.StateHasChanged();
+        Console.WriteLine(selectedNode);
+    }
+
+}
