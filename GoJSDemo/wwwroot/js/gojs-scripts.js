@@ -3,7 +3,7 @@
 // In this project, Index.razor calls it from within OnAfterRender in Index.razor.cs
 var myDiagram;
 
-function initGoJS() {
+function initGoJS(keys, links) {
 
 
     var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -72,19 +72,23 @@ function initGoJS() {
     // but use the default Link template, by not setting Diagram.linkTemplate
 
     // create the model data that will be represented by Nodes and Links
+    //myDiagram.model = new go.GraphLinksModel(
+    //    [
+    //        { key: "Alpha", color: "lightblue", image: "images/7.svg" },
+    //        { key: "Beta", color: "orange", image: "images/6.svg" },
+    //        { key: "Gamma", color: "lightgreen", image: "images/8.svg" },
+    //        { key: "Delta", color: "pink", image: "images/9.svg" }
+    //    ],
+    //    [
+    //        { from: "Alpha", to: "Beta" },
+    //        { from: "Alpha", to: "Gamma" },
+    //        { from: "Gamma", to: "Delta" },
+    //        { from: "Delta", to: "Alpha" }
+    //    ]);
+    //alert(JSON.stringify(keys));
+    //alert(JSON.stringify(links));
     myDiagram.model = new go.GraphLinksModel(
-        [
-            { key: "Alpha", color: "lightblue", image: "images/7.svg" },
-            { key: "Beta", color: "orange", image: "images/6.svg" },
-            { key: "Gamma", color: "lightgreen", image: "images/8.svg" },
-            { key: "Delta", color: "pink", image: "images/9.svg" }
-        ],
-        [
-            { from: "Alpha", to: "Beta" },
-            { from: "Alpha", to: "Gamma" },
-            { from: "Gamma", to: "Delta" },
-            { from: "Delta", to: "Alpha" }
-        ]);
+        keys, links);
 
     function cmCommand(e, obj) {
         var node = obj.part.adornedPart;  // the Node with the context menu

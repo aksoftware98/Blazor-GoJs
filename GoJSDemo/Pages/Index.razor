@@ -5,17 +5,21 @@
 <h2>Space:</h2>
 <div id="myDiagramDiv" style="height: 600px; width: 600px; border: 1px solid black; float: left;"></div>
 
-
 <button class="btn btn-success" @onclick="ExpandSelected">Expand selected</button>
 <h5>Selected Node: @SelectedNode</h5>
+
 @code
 {
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        index = this; 
+        index = this;
         if (firstRender)
-            await js.InvokeAsync<string>("initGoJS");
+        {
+
+            var data = diagram.GetGoJsRepresentation();
+            await js.InvokeAsync<string>("initGoJS", data.Item1, data.Item2);
+        }
     }
 
     static Index index = null;
@@ -34,5 +38,50 @@
         index.StateHasChanged();
         Console.WriteLine(selectedNode);
     }
+
+    protected override void OnInitialized()
+    {
+
+        base.OnInitialized();
+    }
+
+    Diagram diagram = new Diagram()
+    {
+        Nodes = new List<DiagramNode>
+    {
+            new DiagramNode
+            {
+                Key = "K1", Icon = "Images/1.svg",
+                Children = new List<DiagramNode>
+            {
+                    new DiagramNode { Key = "K A", Icon = "Images/2.svg" },
+                    new DiagramNode { Key = "K B", Icon = "Images/3.svg" },
+                    new DiagramNode { Key = "K C", Icon = "Images/4.svg" , Children =
+                        new List<DiagramNode>()
+                    {
+                            new DiagramNode { Key = "K C A", Icon = "Images/5.svg" }
+                        }
+                    }
+                }
+            },
+            new DiagramNode
+            {
+                Key = "A1",
+                Icon = "Images/6.svg",
+                Children = new List<DiagramNode>
+            {
+                    new DiagramNode { Key = "A A", Icon = "Images/1.svg" },
+                    new DiagramNode { Key = "A B", Icon = "Images/3.svg" },
+                    new DiagramNode { Key = "A C", Icon = "Images/5.svg", Children =
+                        new List<DiagramNode>()
+                    {
+                            new DiagramNode { Key = "A C A", Icon = "Images/8.svg" }, new DiagramNode { Key = "A C B", Icon = "Images/3.svg" }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
 
 }
