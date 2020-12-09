@@ -6,7 +6,7 @@
 <div id="myDiagramDiv" style="height: 600px; width: 600px; border: 1px solid black; float: left;"></div>
 
 <button class="btn btn-success" @onclick="ExpandSelected">Expand selected</button>
-<h5>Selected Node: @SelectedNode</h5>
+<h5>Selected Node: @SelectedNode.Key</h5>
 
 @code
 {
@@ -23,18 +23,43 @@
     }
 
     static Index index = null;
+    Random rnd = new Random(DateTime.Now.Millisecond);
 
     private async Task ExpandSelected()
     {
-        await js.InvokeVoidAsync("expandSelected");
+        SelectedNode.Children.Add(new DiagramNode
+        {
+            Key = SelectedNode.Key + rnd.Next(10000),
+            Icon = "images/" + rnd.Next(1, 9) + ".svg"
+        });
+        SelectedNode.Children.Add(new DiagramNode
+        {
+            Key = SelectedNode.Key + rnd.Next(10000),
+            Icon = "images/" + rnd.Next(1, 9) + ".svg"
+        });
+        SelectedNode.Children.Add(new DiagramNode
+        {
+            Key = SelectedNode.Key + rnd.Next(10000),
+            Icon = "images/" + rnd.Next(1, 9) + ".svg",
+            Children = new List<DiagramNode>()
+            {
+                new DiagramNode
+                {
+                    Key = SelectedNode.Key + rnd.Next(10000),
+                    Icon = "images/" + rnd.Next(1, 9) + ".svg"
+                }
+            }
+        });
+        var rep = SelectedNode.GetGoJsNodes();
+        await js.InvokeVoidAsync("expandSelected", rep.Item1, rep.Item2);
     }
 
-    static string SelectedNode = string.Empty;
+    static DiagramNode SelectedNode = new DiagramNode();
 
     [JSInvokable("selectNode")]
     public static void SelectNode(string selectedNode)
     {
-        SelectedNode = selectedNode;
+        SelectedNode = diagram.FlatNodes.SingleOrDefault(n => n.Key == selectedNode);
         index.StateHasChanged();
         Console.WriteLine(selectedNode);
     }
@@ -45,20 +70,20 @@
         base.OnInitialized();
     }
 
-    Diagram diagram = new Diagram()
+    static Diagram diagram = new Diagram()
     {
         Nodes = new List<DiagramNode>
-    {
+{
             new DiagramNode
             {
                 Key = "K1", Icon = "Images/1.svg",
                 Children = new List<DiagramNode>
-            {
+        {
                     new DiagramNode { Key = "K A", Icon = "Images/2.svg" },
                     new DiagramNode { Key = "K B", Icon = "Images/3.svg" },
                     new DiagramNode { Key = "K C", Icon = "Images/4.svg" , Children =
                         new List<DiagramNode>()
-                    {
+                {
                             new DiagramNode { Key = "K C A", Icon = "Images/5.svg" }
                         }
                     }
@@ -69,12 +94,12 @@
                 Key = "A1",
                 Icon = "Images/6.svg",
                 Children = new List<DiagramNode>
-            {
+        {
                     new DiagramNode { Key = "A A", Icon = "Images/1.svg" },
                     new DiagramNode { Key = "A B", Icon = "Images/3.svg" },
                     new DiagramNode { Key = "A C", Icon = "Images/5.svg", Children =
                         new List<DiagramNode>()
-                    {
+                {
                             new DiagramNode { Key = "A C A", Icon = "Images/8.svg" }, new DiagramNode { Key = "A C B", Icon = "Images/3.svg" }
                         }
                     }

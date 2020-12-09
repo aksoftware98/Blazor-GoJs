@@ -28,11 +28,34 @@ namespace GoJSDemo.Models
         {
             Children = new List<DiagramNode>();
         }
+
+        public List<DiagramNode> GetDiagramNode(DiagramNode node, List<DiagramNode> nodes)
+        {
+            List<DiagramNode> currentNodes = nodes.ToList();
+            foreach (var item in nodes)
+            {
+                item.ParentNode = node;
+                if (item.Children.Any())
+                    currentNodes.AddRange(GetDiagramNode(item, item.Children));
+            }
+
+            return currentNodes;
+        }
+
+        public (object, object) GetGoJsNodes()
+        {
+            var nodes = GetDiagramNode(this, Children);
+            var links = nodes.Where(n => n.ParentNode != null).Select(i => new Link { From = i.ParentNode.Key, To = i.Key }).ToList();
+
+            return (nodes.Select(n => new { key = n.Key, image = n.Icon }).ToArray(), links.Select(l => new { from = l.From, to = l.To }).ToArray());
+        }
     }
 
     public class Diagram
     {
         public List<DiagramNode> Nodes { get; set; }
+
+        public List<DiagramNode> FlatNodes => GetDiagramNode(null, Nodes ?? new List<DiagramNode>());
 
         public Diagram()
         {

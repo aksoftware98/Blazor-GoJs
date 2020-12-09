@@ -100,7 +100,9 @@ function initGoJS(keys, links) {
 
 }
 
-function expandSelected() {
+function expandSelected(data, link) {
+    alert(JSON.stringify(data));
+    alert(JSON.stringify(link));
     var selectedNode = "";
     myDiagram.selection.each(function (n) {
         selectedNode = n.data.key; 
@@ -108,15 +110,17 @@ function expandSelected() {
 
     var model = myDiagram.model;
     var newKey = selectedNode + (Math.floor(Math.random() * 100).toString());
-    model.addNodeData({
-        "key": newKey,
-        "color": "blue",
-        "image": "images/" + (Math.floor(Math.random() * 9).toString()) + ".svg"
-    });
-    model.addLinkData({
-        "from": selectedNode,
-        "to": newKey
-    });
+    //model.addNodeData({
+    //    "key": newKey,
+    //    "color": "blue",
+    //    "image": "images/" + (Math.floor(Math.random() * 9).toString()) + ".svg"
+    //});
+    //model.addLinkData({
+    //    "from": selectedNode,
+    //    "to": newKey
+    //});
+    model.addNodeDataCollection(data);
+    model.addLinkDataCollection(link);
 }
 
 function expandNode(node) {
