@@ -40,7 +40,8 @@ function initGoJS(keys, links) {
             //$(go.Shape, "RoundedRectangle", { strokeWidth: 0, fill: "white" },
             //    // Shape.fill is bound to Node.data.color
             //    new go.Binding("fill", "color")),
-            $(go.Picture, { source: "images/1.svg", column: 0, margin: 2, width: 50, height: 50 }, new go.Binding("source", "image"),
+            $(go.Panel, "Table", 
+            $(go.Picture, { source: "images/1.svg", row: 0,column: 0, margin: 2, width: 50, height: 50 }, new go.Binding("source", "image"),
                 {
                     contextMenu:                            // define a context menu for each node
                         $("ContextMenu", "Spot",              // that has several buttons around
@@ -49,11 +50,12 @@ function initGoJS(keys, links) {
                                 { alignment: go.Spot.Right, alignmentFocus: go.Spot.Right, click: cmCommand })
                         )  // end Adornment
                 }),
+                $(go.TextBlock, {text: "Test", row: 1, column: 0, margin: 2, font: "14px arial", stroke: "blue"})
             //$(go.TextBlock,
             //    { margin: 8, font: "bold 14px sans-serif", stroke: '#333' }, // Specify a margin to add some room around the text
             //    // TextBlock.text is bound to Node.data.key
             //    new go.Binding("text", "key"))
-        );
+        ));
 
     myDiagram.linkTemplate =
         $(go.Link,  // the whole link panel
@@ -61,7 +63,7 @@ function initGoJS(keys, links) {
                 curve: go.Link.Bezier,
                 adjusting: go.Link.Stretch,
                 reshapable: true, relinkableFrom: true, relinkableTo: true,
-                toShortLength: 3
+                toShortLength: 10
             },
             $(go.Shape,  // the link shape
                 { strokeWidth: 1.5, 'stroke': 'black' },
