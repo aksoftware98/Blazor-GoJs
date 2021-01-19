@@ -2,9 +2,32 @@
 
 @inject IJSRuntime js
 
-<h2>Space:</h2>
-<div id="myDiagramDiv" style="height: 600px; width: 600px; border: 1px solid black; float: left;"></div>
-
+<h2>@message:</h2>
+<div style="position: relative;">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+    <ul id="contextMenu" class="menu">
+        @if (SelectedNode != null)
+        {
+            @foreach (var item in SelectedNode.MenuItems)
+            {
+                <li class="menu-item" @onclick="() => item.Action.Invoke(SelectedNode)">@item.Title</li>
+            }
+        }
+        <li id="cut" class="menu-item">Cut</li>
+        <li id="copy" class="menu-item">Copy</li>
+        <li id="paste" class="menu-item">Paste</li>
+        <li id="delete" class="menu-item">Delete</li>
+        <li id="color" class="menu-item">
+            Color
+            <ul class="menu">
+                <li class="menu-item" style="background-color: #f38181;">Red</li>
+                <li class="menu-item" style="background-color: #eaffd0;">Green</li>
+                <li class="menu-item" style="background-color: #95e1d3;">Blue</li>
+                <li class="menu-item" style="background-color: #fce38a;">Yellow</li>
+            </ul>
+        </li>
+    </ul>
+</div>
 <button class="btn btn-success" @onclick="ExpandSelected">Expand selected</button>
 <h5>Selected Node: @SelectedNode.Key</h5>
 
@@ -18,7 +41,8 @@
         {
 
             var data = diagram.GetGoJsRepresentation();
-            await js.InvokeAsync<string>("initGoJS", data.Item1, data.Item2);
+            //await js.InvokeAsync<string>("initGoJS", data.Item1, data.Item2);
+            await js.InvokeVoidAsync("initRadialJs");
         }
     }
 
@@ -87,7 +111,7 @@
             Key = SelectedNode.Key + rnd.Next(10000),
             Icon = "images/" + rnd.Next(1, 9) + ".svg",
             Children = new List<DiagramNode>()
-            {
+        {
                 new DiagramNode
                 {
                     Key = SelectedNode.Key + rnd.Next(10000),
@@ -99,7 +123,13 @@
         await js.InvokeVoidAsync("expandSelected", rep.Item1, rep.Item2);
     }
 
+    static string message = "";
     static DiagramNode SelectedNode = new DiagramNode();
+    private static void ContextClicked(DiagramNode node)
+    {
+        Console.WriteLine($"{node.Key} clicked");
+        message = $"{node.Key} clicked";
+    }
 
     [JSInvokable("selectNode")]
     public static void SelectNode(string selectedNode)
@@ -109,26 +139,27 @@
         Console.WriteLine(selectedNode);
     }
 
-    protected override void OnInitialized()
+    static List<ContextMenuItem> MenuItems = new List<ContextMenuItem>
     {
-
-        base.OnInitialized();
-    }
-
+        new ContextMenuItem {Title = "Do something", Action = (n) => ContextClicked(SelectedNode)},
+        new ContextMenuItem {Title = "Do other", Action = (n) => ContextClicked(SelectedNode)},
+    };
     static Diagram diagram = new Diagram()
     {
+
         Nodes = new List<DiagramNode>
 {
             new DiagramNode
             {
                 Key = "K1", Icon = "Images/1.svg",
+                MenuItems = MenuItems,
                 Children = new List<DiagramNode>
-        {
-                    new DiagramNode { Key = "K A", Icon = "Images/2.svg" },
-                    new DiagramNode { Key = "K B", Icon = "Images/3.svg" },
-                    new DiagramNode { Key = "K C", Icon = "Images/4.svg" , Children =
+    {
+                    new DiagramNode { Key = "K A", Icon = "Images/2.svg", MenuItems = MenuItems, },
+                    new DiagramNode { Key = "K B", Icon = "Images/3.svg", MenuItems = MenuItems,},
+                    new DiagramNode { Key = "K C", Icon = "Images/4.svg", MenuItems = MenuItems, Children =
                         new List<DiagramNode>()
-                {
+            {
                             new DiagramNode { Key = "K C A", Icon = "Images/5.svg" }
                         }
                     }
@@ -139,12 +170,12 @@
                 Key = "A1",
                 Icon = "Images/6.svg",
                 Children = new List<DiagramNode>
-        {
-                    new DiagramNode { Key = "A A", Icon = "Images/1.svg" },
-                    new DiagramNode { Key = "A B", Icon = "Images/3.svg" },
-                    new DiagramNode { Key = "A C", Icon = "Images/5.svg", Children =
+    {
+                    new DiagramNode { Key = "A A", Icon = "Images/1.svg", MenuItems = MenuItems, },
+                    new DiagramNode { Key = "A B", Icon = "Images/3.svg", MenuItems = MenuItems, },
+                    new DiagramNode { Key = "A C", Icon = "Images/5.svg", MenuItems = MenuItems, Children =
                         new List<DiagramNode>()
-                {
+            {
                             new DiagramNode { Key = "A C A", Icon = "Images/8.svg" }, new DiagramNode { Key = "A C B", Icon = "Images/3.svg" }
                         }
                     }

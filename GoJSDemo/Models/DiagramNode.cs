@@ -24,9 +24,12 @@ namespace GoJSDemo.Models
 
         public DiagramNode ParentNode { get; set; }
 
+        public List<ContextMenuItem> MenuItems { get; set; }
+
         public DiagramNode()
         {
             Children = new List<DiagramNode>();
+            MenuItems = new List<ContextMenuItem>(); 
         }
 
         public List<DiagramNode> GetDiagramNode(DiagramNode node, List<DiagramNode> nodes)
@@ -95,6 +98,26 @@ namespace GoJSDemo.Models
 
             return currentNodes;
         }
+    }
+
+    public class ContextMenuItem
+    {
+
+        public string Title { get; set; }
+        public Action<DiagramNode> Action { get; set; }
+
+        public ContextMenuItem()
+        {
+
+        }
+
+        public ContextMenuItem(string title, Action<DiagramNode> action)
+        {
+            Title = title;
+            Action = action;
+        }
+
+
     }
 
     public class Link
